@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>First Deal Execution System</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 850px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #111;
+      color: #eee;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    p {
+      text-align: center;
+      color: #aaa;
+      margin-bottom: 40px;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 20px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      background: #222;
+      color: #fff;
+      border: 1px solid #444;
+    }
+
+    button {
+      margin-top: 25px;
+      padding: 12px;
+      width: 100%;
+      background: #00c853;
+      color: black;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #00e676;
+    }
+
+    #result, #followupResult {
+      margin-top: 40px;
+      white-space: pre-wrap;
+      background: #1b1b1b;
+      padding: 25px;
+      border: 1px solid #333;
+      line-height: 1.6;
+    }
+
+    hr {
+      margin-top: 60px;
+      border: 1px solid #333;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>Build Your First Paid Deal</h1>
+<p>No ideas. No theory. Just execution.</p>
+
+<form id="plannerForm">
+
+  <label>What skills can you use immediately?</label>
+  <input type="text" id="skills" required>
+
+  <label>How many hours per week can you realistically work?</label>
+  <input type="number" id="hours" required>
+
+  <label>Are you comfortable speaking to clients?</label>
+  <select id="comfort">
+    <option value="yes">Yes</option>
+    <option value="little">Somewhat</option>
+    <option value="no">No</option>
+  </select>
+
+  <label>Do you need income within 30 days?</label>
+  <select id="urgency">
+    <option value="yes">Yes</option>
+    <option value="no">No</option>
+  </select>
+
+  <label>Monthly income target?</label>
+  <input type="number" id="incomeGoal" required>
+
+  <button type="submit">Generate Execution Plan</button>
+</form>
+
+<div id="result"></div>
+
+<hr>
+
+<h3>Ask a Tactical Follow-Up</h3>
+<input type="text" id="followupQuestion" placeholder="Example: What if they say it's too expensive?">
+<button onclick="sendFollowup()">Ask</button>
+
+<div id="followupResult"></div>
+
+<script>
+document.getElementById("plannerForm").addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  const skills = document.getElementById("skills").value;
+  const hours = document.getElementById("hours").value;
+  const comfort = document.getElementById("comfort").value;
+  const urgency = document.getElementById("urgency").value;
+  const incomeGoal = document.getElementById("incomeGoal").value;
+
+  const response = await fetch("/plan", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      skills,
+      hours,
+      comfort,
+      urgency,
+      incomeGoal
+    })
+  });
+
+  const data = await response.json();
+  document.getElementById("result").innerText = data.plan;
+  document.getElementById("followupResult").innerText = "";
+});
+
+async function sendFollowup() {
+  const question = document.getElementById("followupQuestion").value;
+
+  const response = await fetch("/followup", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ question })
+  });
+
+  const data = await response.json();
+  document.getElementById("followupResult").innerText = data.reply;
+}
+</script>
+
+</body>
+</html>
